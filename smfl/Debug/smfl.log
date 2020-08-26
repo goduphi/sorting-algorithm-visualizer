@@ -1,0 +1,28 @@
+﻿  main.cpp
+E:\Random Programs\smfl\smfl\main.cpp(10,20): warning C4018: '<': signed/unsigned mismatch
+E:\Random Programs\smfl\smfl\main.cpp(12,77): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+E:\Random Programs\smfl\smfl\main.cpp(12,59): warning C4244: 'argument': conversion from 'unsigned int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+E:\Random Programs\smfl\smfl\main.cpp(14,22): warning C4244: 'argument': conversion from 'unsigned int' to 'float', possible loss of data
+E:\Random Programs\smfl\smfl\main.cpp(34,20): warning C4244: 'initializing': conversion from '_Rep' to 'unsigned int', possible loss of data
+          with
+          [
+              _Rep=std::chrono::system_clock::rep
+          ]
+E:\Random Programs\smfl\smfl\main.cpp(61,19): warning C4018: '<': signed/unsigned mismatch
+E:\Random Programs\smfl\smfl\main.cpp(71,36): warning C4018: '<': signed/unsigned mismatch
+E:\Random Programs\smfl\smfl\main.cpp(79,23): warning C4018: '<': signed/unsigned mismatch
+E:\Random Programs\smfl\smfl\main.cpp(109,32): warning C4018: '<': signed/unsigned mismatch
+E:\Random Programs\smfl\smfl\main.cpp(23,20): warning C4018: '<': signed/unsigned mismatch
+E:\Random Programs\smfl\smfl\main.cpp(119): message : see reference to function template instantiation 'std::ostream &operator <<<int>(std::ostream &,const std::vector<int,std::allocator<int>> &)' being compiled
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.24.28314\include\chrono(632): message : see reference to class template instantiation 'std::chrono::duration<double,std::ratio<1,1>>' being compiled
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.24.28314\include\chrono(178): message : see reference to class template instantiation 'std::chrono::duration<__int64,std::nano>' being compiled
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.24.28314\include\chrono(610): message : see reference to class template instantiation 'std::chrono::time_point<std::chrono::steady_clock,std::chrono::nanoseconds>' being compiled
+  smfl.vcxproj -> E:\Random Programs\smfl\Debug\smfl.exe
