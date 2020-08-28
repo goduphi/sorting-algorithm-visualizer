@@ -12,19 +12,15 @@
 class Bar
 {
 public:
-	Bar(int height, int width)
-		: _height{ height }, _width{ width }
+	Bar(int width, int height)
+		: _width{ width }, _height{ height }
 	{
-		this->_bar = new sf::RectangleShape(sf::Vector2f(this->_height, this->_width));
-	}
-	~Bar()
-	{
-		delete this->_bar;
+		this->_bar = sf::RectangleShape(sf::Vector2f(this->_width, this->_height));
 	}
 private:
-	sf::RectangleShape* _bar;
-	int _height;
+	sf::RectangleShape _bar;
 	int _width;
+	int _height;
 };
 
 #endif

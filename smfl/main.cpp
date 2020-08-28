@@ -3,6 +3,9 @@
 #include <vector>
 #include <chrono>
 #include <random>
+#include "imgui.h"
+#include "imgui-SFML.h"
+#include <SFML/System/Clock.hpp>
 
 std::vector<sf::RectangleShape> InitializeVector(std::vector<int> nums, unsigned int barWidth)
 {
@@ -25,7 +28,19 @@ std::ostream& operator<<(std::ostream& os, const std::vector<T>& v)
 	return os;
 }
 
-void SwapHeight(sf::RenderWindow& w, std::vector<sf::RectangleShape>& v, int i, int j)
+void swapHeights(std::vector<sf::RectangleShape>& v, unsigned int i, unsigned int j)
+{
+	// f: first bar
+	// s: second bar
+	const sf::Vector2f f = v[i].getSize();
+	const sf::Vector2f s = v[j].getSize();
+
+	auto height = f.y;
+	v[i].setSize({ f.x, s.y });
+	v[j].setSize({ s.x, height });
+}
+
+void colorBars(sf::RenderWindow& w, std::vector<sf::RectangleShape>& v, unsigned int i, unsigned int j)
 {
 	v[i].setFillColor(sf::Color::Blue);
 	v[j].setFillColor(sf::Color::Green);
@@ -40,14 +55,8 @@ void SwapHeight(sf::RenderWindow& w, std::vector<sf::RectangleShape>& v, int i, 
 	// end the current frame
 	w.display();
 
-	// f: first bar
-	// s: second bar
-	const sf::Vector2f f = v[i].getSize();
-	const sf::Vector2f s = v[j].getSize();
-
-	auto height = f.y;
-	v[i].setSize({ f.x, s.y });
-	v[j].setSize({ s.x, height });
+	// Swap the heights
+	swapHeights(v, i, j);
 
 	v[i].setFillColor(sf::Color(100, 250, 250));
 	v[j].setFillColor(sf::Color(100, 250, 250));
@@ -93,15 +102,7 @@ void selectionSort(sf::RenderWindow& window, std::vector<sf::RectangleShape>& re
 
 		// Sorts the array
 		std::swap(nums[loopCounter], nums[minIdx]);
-
-		// f: first
-		// s: second
-		const sf::Vector2f f = rects[loopCounter].getSize();
-		const sf::Vector2f s = rects[minIdx].getSize();
-
-		auto height = f.y;
-		rects[loopCounter].setSize({ f.x, s.y });
-		rects[minIdx].setSize({ s.x, height });
+		swapHeights(rects, loopCounter, minIdx);
 
 		for (int i = loopCounter; i < nums.size(); i++)
 		{
@@ -140,14 +141,14 @@ int partition(sf::RenderWindow& w, std::vector<sf::RectangleShape>& r, std::vect
 		{
 			i++;
 
-			SwapHeight(w, r, i, j);
+			colorBars(w, r, i, j);
 			std::swap(v[i], v[j]);
 		}
 		else 
 			r[j].setFillColor(sf::Color(100, 250, 250));
 	}
 
-	SwapHeight(w, r, i + 1, high);
+	colorBars(w, r, i + 1, high);
 	std::swap(v[i + 1], v[high]);
 	return i + 1;
 }
@@ -175,7 +176,9 @@ void qsort(sf::RenderWindow& w, std::vector<sf::RectangleShape>& r, std::vector<
 int main()
 {
 	sf::RenderWindow window(sf::VideoMode(800, 600), "Sorting algorithm Visualizer", sf::Style::Titlebar | sf::Style::Close);
-	window.setFramerateLimit(60);
+	int frameRate = 120;
+	window.setFramerateLimit(frameRate);
+	ImGui::SFML::Init(window);
 
 	// Obtain a seed from the system clock
 	unsigned int seed = std::chrono::system_clock::now().time_since_epoch().count();
@@ -192,7 +195,7 @@ int main()
 
 	std::vector<sf::RectangleShape> rects = InitializeVector(nums, barWidth);
 
-	bool called = false;
+	sf::Clock deltaClock;
 	// Run the program as long as the window is open
 	while (window.isOpen())
 	{
@@ -200,18 +203,60 @@ int main()
 		sf::Event event;
 		while (window.pollEvent(event))
 		{
+			ImGui::SFML::ProcessEvent(event);
 			// Close event requested, so close the window
 			if (event.type == sf::Event::Closed)
 				window.close();
 		}
-		if (!called)
+
+		ImGui::SFML::Update(window, deltaClock.restart());
+		ImGui::Begin("Control Panel");
+		
+		if (ImGui::Button("Quick Sort [O(NlogN)]"))
 		{
 			qsort(window, rects, nums, 0, nums.size() - 1);
-			//selectionSort(window, rects, nums);
-			called = true;
 		}
-		
-		std::cout << nums << std::endl;
+
+		if (ImGui::Button("Selection Sort [O(N^2)]"))
+		{
+			selectionSort(window, rects, nums);
+		}
+
+		if (ImGui::SliderInt("ElementNo", &barWidth, 5, 20))
+		{
+			numberOfElements = winWidth / (barWidth + 1);
+			nums.resize(numberOfElements);
+			rects.resize(numberOfElements);
+			for (int i = 0; i < numberOfElements; i++)
+				nums[i] = randomNumber() % (winHeight / 12) + 1;
+
+			rects = InitializeVector(nums, barWidth);
+		}
+
+		if (ImGui::SliderInt("Speed", &frameRate, 1, 120))
+		{
+			window.setFramerateLimit(frameRate);
+		}
+
+		if (ImGui::Button("Generate"))
+		{
+			for (int i = 0; i < numberOfElements; i++)
+				nums[i] = randomNumber() % (winHeight / 12) + 1;
+
+			rects = InitializeVector(nums, barWidth);
+		}
+
+		ImGui::End();
+
+		window.clear(sf::Color::Black);
+
+		for (int i = 0; i < numberOfElements; i++)
+			window.draw(rects[i]);
+
+		ImGui::SFML::Render(window);
+		window.display();
+		//std::cout << nums << std::endl;
 	}
+	ImGui::SFML::Shutdown();
 	return 0;
 }
